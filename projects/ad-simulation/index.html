@@ -353,8 +353,59 @@
   </div>
 
   <!-- 05 TOOLS -->
-  <div class="section" id="sec05">
-    <div class="section-title">Foydalanilgan Toollar <span class="section-num">05</span></div>
+  <!-- NOTES -->
+  <div class="section" id="sec-notes">
+    <div class="section-title">Batafsil Notes <span class="section-num">05</span></div>
+    <p>Har bir hujum bosqichi uchun to'liq texnik tavsif, OPSEC ko'rsatmalar va EDR telemetriya matritsasi.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1rem 0">
+
+      <a href="notes/ad-01-enumeration.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1rem;text-decoration:none;display:block;transition:border-color .15s,background .15s;position:relative;overflow:hidden" onmouseover="this.style.borderColor='var(--green3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green-dim)"></div>
+        <div style="color:var(--green3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">AD-01</div>
+        <div style="color:var(--text);font-size:13px;font-weight:700;margin-bottom:4px">Enumeration</div>
+        <div style="color:var(--text-dim);font-size:11px">ADSI, PowerView, BloodHound OPSEC</div>
+        <div style="color:var(--green3);font-size:11px;margin-top:8px">O'qish →</div>
+      </a>
+
+      <a href="notes/ad-02-kerberos.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1rem;text-decoration:none;display:block;transition:border-color .15s,background .15s;position:relative;overflow:hidden" onmouseover="this.style.borderColor='var(--green3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)"></div>
+        <div style="color:var(--amber);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">AD-02</div>
+        <div style="color:var(--text);font-size:13px;font-weight:700;margin-bottom:4px">Kerberos Attacks</div>
+        <div style="color:var(--text-dim);font-size:11px">Kerberoasting, AS-REP, Golden/Silver Ticket</div>
+        <div style="color:var(--green3);font-size:11px;margin-top:8px">O'qish →</div>
+      </a>
+
+      <a href="notes/ad-03-lateral.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1rem;text-decoration:none;display:block;transition:border-color .15s,background .15s;position:relative;overflow:hidden" onmouseover="this.style.borderColor='var(--green3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan)"></div>
+        <div style="color:var(--cyan);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">AD-03</div>
+        <div style="color:var(--text);font-size:13px;font-weight:700;margin-bottom:4px">Lateral Movement</div>
+        <div style="color:var(--text-dim);font-size:11px">DCOM, WMI, WinRM, Overpass-the-Hash</div>
+        <div style="color:var(--green3);font-size:11px;margin-top:8px">O'qish →</div>
+      </a>
+
+      <a href="notes/ad-04-privesc.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1rem;text-decoration:none;display:block;transition:border-color .15s,background .15s;position:relative;overflow:hidden" onmouseover="this.style.borderColor='var(--green3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red)"></div>
+        <div style="color:var(--red);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">AD-04</div>
+        <div style="color:var(--text);font-size:13px;font-weight:700;margin-bottom:4px">Privilege Escalation</div>
+        <div style="color:var(--text-dim);font-size:11px">DCSync, ACL Abuse, Delegation</div>
+        <div style="color:var(--green3);font-size:11px;margin-top:8px">O'qish →</div>
+      </a>
+
+      <a href="notes/ad-05-persistence.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1rem;text-decoration:none;display:block;transition:border-color .15s,background .15s;position:relative;overflow:hidden" onmouseover="this.style.borderColor='var(--green3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--purple)"></div>
+        <div style="color:var(--purple);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">AD-05</div>
+        <div style="color:var(--text);font-size:13px;font-weight:700;margin-bottom:4px">Persistence</div>
+        <div style="color:var(--text-dim);font-size:11px">Golden/Diamond Ticket, DSRM, AdminSDHolder</div>
+        <div style="color:var(--green3);font-size:11px;margin-top:8px">O'qish →</div>
+      </a>
+
+    </div>
+  </div>
+
+
+  <div class="section" id="sec06">
+    <div class="section-title">Foydalanilgan Toollar <span class="section-num">06</span></div>
 
     <div class="tools-grid">
       <div class="tool-card">
@@ -412,16 +463,17 @@
     <a href="#sec02" class="toc-item">02 — Hujum bosqichlari</a>
     <a href="#sec03" class="toc-item">03 — OPSEC texnikalar</a>
     <a href="#sec04" class="toc-item">04 — Blue team notes</a>
-    <a href="#sec05" class="toc-item">05 — Toollar</a>
+    <a href="#sec-notes" class="toc-item">05 — Batafsil notes</a>
+    <a href="#sec06" class="toc-item">06 — Toollar</a>
   </div>
 
   <div class="sidebar-card">
     <div class="sidebar-title">Batafsil notes</div>
-    <a href="https://github.com/komilov-infosec/AD-Offensive-Attack-Simulation/blob/main/notes/AD-01-Enumeration.md" class="toc-item" target="_blank">AD-01 Enumeration</a>
-    <a href="https://github.com/komilov-infosec/AD-Offensive-Attack-Simulation/blob/main/notes/AD-02-Kerberos-Attacks.md" class="toc-item" target="_blank">AD-02 Kerberos Attacks</a>
-    <a href="https://github.com/komilov-infosec/AD-Offensive-Attack-Simulation/blob/main/notes/AD-03-Lateral-Movement.md" class="toc-item" target="_blank">AD-03 Lateral Movement</a>
-    <a href="https://github.com/komilov-infosec/AD-Offensive-Attack-Simulation/blob/main/notes/AD-04-Privilege-Escalation.md" class="toc-item" target="_blank">AD-04 Privilege Escalation</a>
-    <a href="https://github.com/komilov-infosec/AD-Offensive-Attack-Simulation/blob/main/notes/AD-05-Persistence.md" class="toc-item" target="_blank">AD-05 Persistence</a>
+    <a href="notes/ad-01-enumeration.html" class="toc-item">AD-01 Enumeration</a>
+    <a href="notes/ad-02-kerberos.html" class="toc-item">AD-02 Kerberos Attacks</a>
+    <a href="notes/ad-03-lateral.html" class="toc-item">AD-03 Lateral Movement</a>
+    <a href="notes/ad-04-privesc.html" class="toc-item">AD-04 Privilege Escalation</a>
+    <a href="notes/ad-05-persistence.html" class="toc-item">AD-05 Persistence</a>
   </div>
 
   <div class="sidebar-card">
