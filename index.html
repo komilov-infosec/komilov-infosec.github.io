@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0xAkatsuki — Security Researcher</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0a;
+    --bg2: #0d130d;
+    --bg3: #111811;
+    --green: #00ff41;
+    --green2: #00cc33;
+    --green3: #008f1f;
+    --green-dim: #004d12;
+    --amber: #ffb700;
+    --red: #ff3b3b;
+    --cyan: #00e5ff;
+    --text: #c8ffc8;
+    --text-dim: #5a8a5a;
+    --border: #1a3a1a;
+    --border2: #0f2a0f;
+    --font: 'JetBrains Mono', 'Share Tech Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,255,65,0.015) 2px,
+      rgba(0,255,65,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* NAVBAR */
+  nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    color: var(--green);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  .nav-links { display: flex; gap: 0; }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 0 1rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    border-left: 1px solid var(--border2);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--green);
+    background: rgba(0,255,65,0.04);
+  }
+
+  .nav-links a::before { content: '> '; color: var(--green3); }
+
+  /* HERO */
+  .hero {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2rem 2rem;
+  }
+
+  .terminal-window {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .terminal-bar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .terminal-title {
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  .terminal-body { padding: 1.5rem; }
+
+  .prompt { color: var(--green2); }
+  .cmd { color: var(--text); }
+  .out { color: var(--text-dim); margin-left: 0; }
+  .out-green { color: var(--green); }
+  .out-amber { color: var(--amber); }
+  .out-cyan { color: var(--cyan); }
+  .out-red { color: var(--red); }
+
+  .line { margin-bottom: 4px; }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* SECTIONS */
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header h2 {
+    color: var(--green);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .section-header h2::before { content: '## '; color: var(--green3); }
+
+  .section-header .line-fill {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+
+  .stat {
+    background: var(--bg2);
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--green);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* WRITEUPS */
+  .writeups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .writeup-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .writeup-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green3);
+    transition: background 0.15s;
+  }
+
+  .writeup-card:hover {
+    border-color: var(--green3);
+    background: var(--bg3);
+  }
+
+  .writeup-card:hover::before { background: var(--green); }
+
+  .writeup-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .badge-easy { background: rgba(0,204,51,0.15); color: var(--green2); border: 1px solid var(--green-dim); }
+  .badge-medium { background: rgba(255,183,0,0.12); color: var(--amber); border: 1px solid rgba(255,183,0,0.3); }
+  .badge-hard { background: rgba(255,59,59,0.12); color: var(--red); border: 1px solid rgba(255,59,59,0.3); }
+  .badge-linux { background: rgba(0,229,255,0.08); color: var(--cyan); border: 1px solid rgba(0,229,255,0.2); }
+  .badge-win { background: rgba(0,204,51,0.08); color: var(--green2); border: 1px solid var(--green-dim); }
+
+  .writeup-title {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .writeup-desc {
+    color: var(--text-dim);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .writeup-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .tag {
+    font-size: 10px;
+    color: var(--green3);
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+
+  .tag::before { content: '#'; }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .skill-group { }
+
+  .skill-group-title {
+    color: var(--green2);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  .skill-item::before { content: '├─ '; color: var(--green3); white-space: pre; }
+  .skill-item:last-child::before { content: '└─ '; color: var(--green3); white-space: pre; }
+
+  .skill-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  /* CERTS */
+  .certs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 3rem;
+  }
+
+  .cert-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.875rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cert-icon { color: var(--green); font-size: 18px; min-width: 24px; text-align: center; }
+  .cert-name { color: var(--text); font-size: 13px; font-weight: 700; }
+  .cert-org { color: var(--text-dim); font-size: 11px; }
+  .cert-status { margin-left: auto; }
+  .cert-status .badge { font-size: 10px; }
+  .badge-done { background: rgba(0,204,51,0.15); color: var(--green2); border: 1px solid var(--green-dim); }
+  .badge-progress { background: rgba(255,183,0,0.12); color: var(--amber); border: 1px solid rgba(255,183,0,0.3); }
+
+  /* BLOG */
+  .blog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+
+  .blog-item {
+    background: var(--bg2);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .blog-item:hover { background: var(--bg3); }
+
+  .blog-date { color: var(--text-dim); font-size: 11px; min-width: 90px; }
+  .blog-title { color: var(--text); font-size: 13px; flex: 1; }
+  .blog-title::before { content: '> '; color: var(--green3); }
+  .blog-arrow { color: var(--green3); font-size: 12px; }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .contact-link {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .contact-link:hover {
+    border-color: var(--green3);
+    background: var(--bg3);
+  }
+
+  .contact-icon { color: var(--green); font-size: 16px; }
+  .contact-label { color: var(--text-dim); font-size: 11px; }
+  .contact-val { color: var(--text); font-size: 13px; font-weight: 500; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+
+  footer span { color: var(--green3); }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    nav { padding: 0 1rem; }
+    .nav-links a { padding: 0 0.6rem; font-size: 11px; }
+    .container { padding: 1.5rem 1rem; }
+    .hero { padding: 2rem 1rem 1rem; }
+    .blog-date { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#"><span>~/</span>0xAkatsuki</a>
+  <div class="nav-links">
+    <a href="#writeups" class="active">writeups</a>
+    <a href="#skills">skills</a>
+    <a href="#blog">blog</a>
+    <a href="#contact">contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="terminal-window">
+    <div class="terminal-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <span class="terminal-title">kali@0xAkatsuki: ~</span>
+    </div>
+    <div class="terminal-body">
+      <div class="line"><span class="prompt">┌──(kali㉿0xAkatsuki)-[~]</span></div>
+      <div class="line"><span class="prompt">└─$ </span><span class="cmd">whoami</span></div>
+      <div class="line out out-green">Penetration Tester | Red Teamer | Bug Hunter</div>
+      <br>
+      <div class="line"><span class="prompt">└─$ </span><span class="cmd">cat about.txt</span></div>
+      <div class="line out">O'zbekistonlik kiberxavfsizlik mutaxassisi.</div>
+      <div class="line out">Active Directory red teaming, web app pentesting,</div>
+      <div class="line out">va bug bounty hunting bilan shug'ullanaman.</div>
+      <br>
+      <div class="line"><span class="prompt">└─$ </span><span class="cmd">ls ./certs/</span></div>
+      <div class="line out"><span class="out-amber">PJPJ</span>  <span class="out-green">CRTP</span>  <span class="out-cyan">OSCP [coming soon]</span></div>
+      <br>
+      <div class="line"><span class="prompt">└─$ </span><span class="cmd">cat status.txt</span></div>
+      <div class="line out"><span class="out-green">[+]</span> Bug bounty hunting: <span class="out-amber">AKTIV</span></div>
+      <div class="line out"><span class="out-green">[+]</span> OSCP tayyorgarligi: <span class="out-amber">JARAYONDA</span></div>
+      <div class="line out"><span class="out-green">[+]</span> Freelance pentest: <span class="out-green">OCHIQ</span></div>
+      <br>
+      <div class="line"><span class="prompt">└─$ </span><span class="cursor"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat">
+      <span class="stat-val">50+</span>
+      <div class="stat-label">Machines Pwned</div>
+    </div>
+    <div class="stat">
+      <span class="stat-val">12</span>
+      <div class="stat-label">Writeups</div>
+    </div>
+    <div class="stat">
+      <span class="stat-val">3</span>
+      <div class="stat-label">CVEs / Bugs</div>
+    </div>
+    <div class="stat">
+      <span class="stat-val">2</span>
+      <div class="stat-label">Certifications</div>
+    </div>
+  </div>
+
+  <!-- WRITEUPS -->
+  <div id="writeups">
+    <div class="section-header">
+      <h2>writeups</h2>
+      <div class="line-fill"></div>
+      <span style="color:var(--text-dim);font-size:12px;">Proving Grounds / HTB</span>
+    </div>
+    <div class="writeups-grid">
+
+      <a href="#" class="writeup-card">
+        <div class="writeup-meta">
+          <span class="badge badge-medium">Medium</span>
+          <span class="badge badge-linux">Linux</span>
+          <span style="color:var(--text-dim);font-size:11px;margin-left:auto;">PG Practice</span>
+        </div>
+        <div class="writeup-title">Assertion101</div>
+        <div class="writeup-desc">LFI orqali initial access, SUID binary orqali root privilege escalation.</div>
+        <div class="writeup-tags">
+          <span class="tag">LFI</span>
+          <span class="tag">SUID</span>
+          <span class="tag">privesc</span>
+        </div>
+      </a>
+
+      <a href="#" class="writeup-card">
+        <div class="writeup-meta">
+          <span class="badge badge-hard">Hard</span>
+          <span class="badge badge-win">Windows</span>
+          <span style="color:var(--text-dim);font-size:11px;margin-left:auto;">PG Practice</span>
+        </div>
+        <div class="writeup-title">Helpdesk</div>
+        <div class="writeup-desc">ManageEngine zaifliqi, Kerberoasting va AD lateral movement.</div>
+        <div class="writeup-tags">
+          <span class="tag">AD</span>
+          <span class="tag">Kerberoasting</span>
+          <span class="tag">lateral-movement</span>
+        </div>
+      </a>
+
+      <a href="#" class="writeup-card">
+        <div class="writeup-meta">
+          <span class="badge badge-easy">Easy</span>
+          <span class="badge badge-linux">Linux</span>
+          <span style="color:var(--text-dim);font-size:11px;margin-left:auto;">HTB</span>
+        </div>
+        <div class="writeup-title">Sau</div>
+        <div class="writeup-desc">SSRF via Request-Baskets, Maltrail RCE exploitatsiyasi.</div>
+        <div class="writeup-tags">
+          <span class="tag">SSRF</span>
+          <span class="tag">RCE</span>
+          <span class="tag">sudo</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div id="skills">
+    <div class="section-header">
+      <h2>skills</h2>
+      <div class="line-fill"></div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">Red Team / AD</div>
+        <div class="skill-item">Kerberoasting / AS-REP
+          <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-item">BloodHound / PowerView
+          <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+        </div>
+        <div class="skill-item">Pass-the-Hash / PTT
+          <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">Lateral Movement
+          <div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-group-title">Web Attacks</div>
+        <div class="skill-item">SQLi / Manual
+          <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+        </div>
+        <div class="skill-item">File Upload Bypass
+          <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+        </div>
+        <div class="skill-item">LFI / Log Poisoning
+          <div class="skill-bar"><div class="skill-fill" style="width:65%"></div></div>
+        </div>
+        <div class="skill-item">SSRF / XXE
+          <div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-group-title">Tools</div>
+        <div class="skill-item">Impacket Suite
+          <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-item">Burp Suite
+          <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+        </div>
+        <div class="skill-item">Chisel / Tunneling
+          <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+        </div>
+        <div class="skill-item">Metasploit
+          <div class="skill-bar"><div class="skill-fill" style="width:72%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CERTS -->
+  <div>
+    <div class="section-header">
+      <h2>certifications</h2>
+      <div class="line-fill"></div>
+    </div>
+    <div class="certs-list">
+      <div class="cert-item">
+        <div class="cert-icon">⬡</div>
+        <div>
+          <div class="cert-name">CRTP — Certified Red Team Professional</div>
+          <div class="cert-org">Altered Security</div>
+        </div>
+        <div class="cert-status"><span class="badge badge-done">✓ Completed</span></div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-icon">⬡</div>
+        <div>
+          <div class="cert-name">PJPJ — PentesterLab</div>
+          <div class="cert-org">PentesterLab</div>
+        </div>
+        <div class="cert-status"><span class="badge badge-done">✓ Completed</span></div>
+      </div>
+      <div class="cert-item">
+        <div class="cert-icon">◎</div>
+        <div>
+          <div class="cert-name">OSCP — Offensive Security Certified Professional</div>
+          <div class="cert-org">OffSec</div>
+        </div>
+        <div class="cert-status"><span class="badge badge-progress">⟳ In Progress</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOG -->
+  <div id="blog" style="margin-top:2rem">
+    <div class="section-header">
+      <h2>blog</h2>
+      <div class="line-fill"></div>
+    </div>
+    <div class="blog-list">
+      <a href="#" class="blog-item">
+        <span class="blog-date">2025-01-10</span>
+        <span class="blog-title">Bug Bounty da AD misconfiguration topish usullari</span>
+        <span class="blog-arrow">→</span>
+      </a>
+      <a href="#" class="blog-item">
+        <span class="blog-date">2024-12-22</span>
+        <span class="blog-title">CRTP sertifikatini qanday oldim — tajribam</span>
+        <span class="blog-arrow">→</span>
+      </a>
+      <a href="#" class="blog-item">
+        <span class="blog-date">2024-11-15</span>
+        <span class="blog-title">Chisel bilan pivoting — amaliy qo'llanma</span>
+        <span class="blog-arrow">→</span>
+      </a>
+      <a href="#" class="blog-item">
+        <span class="blog-date">2024-10-03</span>
+        <span class="blog-title">Kerberoasting hujumini tushunish va himoya</span>
+        <span class="blog-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div id="contact">
+    <div class="section-header">
+      <h2>contact</h2>
+      <div class="line-fill"></div>
+    </div>
+    <div class="contact-grid">
+      <a href="https://github.com/akatsuki" class="contact-link">
+        <span class="contact-icon">⌥</span>
+        <div>
+          <div class="contact-label">GitHub</div>
+          <div class="contact-val">github.com/akatsuki</div>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/akatsuki" class="contact-link">
+        <span class="contact-icon">◈</span>
+        <div>
+          <div class="contact-label">LinkedIn</div>
+          <div class="contact-val">linkedin.com/in/akatsuki</div>
+        </div>
+      </a>
+      <a href="https://app.hackthebox.com/profile/akatsuki" class="contact-link">
+        <span class="contact-icon">◉</span>
+        <div>
+          <div class="contact-label">HackTheBox</div>
+          <div class="contact-val">HTB Profile</div>
+        </div>
+      </a>
+      <a href="mailto:your@email.com" class="contact-link">
+        <span class="contact-icon">✉</span>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-val">your@email.com</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>root@0xAkatsuki</span>:~# Built with terminal aesthetics | O'zbekiston 🇺🇿 | <span>2025</span>
+</footer>
+
+</body>
+</html>
