@@ -216,6 +216,43 @@
     letter-spacing: 0.08em;
   }
 
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .project-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--red);
+    transition: background 0.15s;
+  }
+
+  .project-card:hover { border-color: var(--red); background: var(--bg3); }
+  .project-card:hover::before { background: var(--red); }
+
+  .project-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .project-title { color: var(--text); font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .project-desc { color: var(--text-dim); font-size: 12px; line-height: 1.5; margin-bottom: 12px; }
+
   /* WRITEUPS */
   .writeups-grid {
     display: grid;
@@ -462,6 +499,7 @@
   <a class="nav-logo" href="#"><span>~/</span>0xAkatsuki</a>
   <div class="nav-links">
     <a href="#writeups" class="active">writeups</a>
+    <a href="#projects">projects</a>
     <a href="#skills">skills</a>
     <a href="#blog">blog</a>
     <a href="#contact">contact</a>
@@ -548,6 +586,35 @@
       </a>
 
     </div>
+
+
+  <!-- PROJECTS -->
+  <div id="projects" style="margin-top:2rem">
+    <div class="section-header">
+      <h2>projects</h2>
+      <div class="line-fill"></div>
+      <span style="color:var(--text-dim);font-size:12px;">Research & Labs</span>
+    </div>
+    <div class="projects-grid">
+
+      <a href="projects/ad-simulation/index.html" class="project-card">
+        <div class="project-meta">
+          <span class="badge badge-red" style="background:rgba(255,59,59,.12);color:var(--red);border:1px solid rgba(255,59,59,.3)">Red Team</span>
+          <span class="badge badge-win">Windows AD</span>
+          <span style="color:var(--text-dim);font-size:11px;margin-left:auto;">Enterprise Lab</span>
+        </div>
+        <div class="project-title">AD Offensive Attack Simulation</div>
+        <div class="project-desc">Enterprise AD muhitida to'liq kill chain — Kerberoasting, ACL Abuse, DCSync. OPSEC-focused, Living off the Land metodologiyasi.</div>
+        <div class="writeup-tags">
+          <span class="tag">ActiveDirectory</span>
+          <span class="tag">Kerberoasting</span>
+          <span class="tag">DCSync</span>
+          <span class="tag">LotL</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
 
   <!-- SKILLS -->
   <div id="skills">

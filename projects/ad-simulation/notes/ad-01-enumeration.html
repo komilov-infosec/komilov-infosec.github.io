@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AD Enumeration | 0xAkatsuki</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg:#0a0e0a;--bg2:#0d130d;--bg3:#111811;
+    --green:#00ff41;--green2:#00cc33;--green3:#008f1f;--green-dim:#004d12;
+    --amber:#ffb700;--red:#ff3b3b;--cyan:#00e5ff;--purple:#b57aff;
+    --text:#c8ffc8;--text-dim:#5a8a5a;
+    --border:#1a3a1a;--border2:#0f2a0f;
+    --font:'JetBrains Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.7;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.012) 2px,rgba(0,255,65,0.012) 4px);pointer-events:none;z-index:999}
+  nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;height:52px;gap:1rem;position:sticky;top:0;z-index:100}
+  .nav-back{color:var(--text-dim);text-decoration:none;font-size:13px;transition:color .15s}.nav-back:hover{color:var(--green)}.nav-back::before{content:'← ';color:var(--green3)}
+  .nav-sep{color:var(--border)}.nav-current{color:var(--green);font-size:13px}
+  .layout{max-width:1100px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:1fr 240px;gap:2rem;align-items:start}
+  @media(max-width:768px){.layout{grid-template-columns:1fr;padding:1rem}.sidebar{display:none}}
+  .page-header{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.5rem;margin-bottom:2rem}
+  .breadcrumb{color:var(--text-dim);font-size:11px;margin-bottom:10px}.breadcrumb span{color:var(--green3)}
+  .page-title{color:var(--green);font-size:22px;font-weight:700;margin-bottom:.5rem}
+  .page-desc{color:var(--text-dim);font-size:12px}
+  .badge{font-size:10px;padding:3px 7px;border-radius:2px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}
+  .badge-opsec{background:rgba(181,122,255,.1);color:var(--purple);border:1px solid rgba(181,122,255,.3)}
+  .badge-lotl{background:rgba(0,204,51,.08);color:var(--green2);border:1px solid var(--green-dim)}
+  .badge-cred{background:rgba(255,183,0,.12);color:var(--amber);border:1px solid rgba(255,183,0,.3)}
+  .badge-red{background:rgba(255,59,59,.12);color:var(--red);border:1px solid rgba(255,59,59,.3)}
+  .section{margin-bottom:2.5rem}
+  .section-title{color:var(--green);font-size:16px;font-weight:700;margin-bottom:1rem;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .section-title::before{content:'# ';color:var(--green3)}
+  .subsection{color:var(--green2);font-size:13px;font-weight:700;margin:1.25rem 0 .75rem}
+  .subsection::before{content:'## ';color:var(--green3)}
+  p{color:var(--text-dim);margin-bottom:.75rem;font-size:13px;line-height:1.8}
+  p strong{color:var(--text);font-weight:500}
+  .cmd-block{background:var(--bg3);border:1px solid var(--border);border-radius:4px;margin:1rem 0;overflow:hidden}
+  .cmd-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 12px;font-size:11px;display:flex;justify-content:space-between}
+  .cmd-label{color:var(--text-dim)}.cmd-lang{color:var(--amber)}
+  .cmd-body{padding:12px 16px;font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)}
+  .cmd-body .comment{color:var(--green3)}
+  .note{border-radius:4px;padding:10px 14px;font-size:12px;margin:1rem 0;display:flex;gap:10px;line-height:1.6}
+  .note-opsec{background:rgba(181,122,255,.06);border:1px solid rgba(181,122,255,.25);color:var(--purple)}
+  .note-warn{background:rgba(255,183,0,.06);border:1px solid rgba(255,183,0,.25);color:var(--amber)}
+  .note-tip{background:rgba(0,204,51,.06);border:1px solid var(--green-dim);color:var(--green2)}
+  .note-icon{min-width:16px;margin-top:1px}
+  .opsec-table{width:100%;border-collapse:collapse;font-size:12px;margin:1rem 0}
+  .opsec-table th{background:var(--bg3);color:var(--green2);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .opsec-table td{padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--text-dim);vertical-align:top;font-size:11px}
+  .opsec-table tr:last-child td{border-bottom:none}
+  .risk-critical{color:var(--red);font-weight:700}
+  .risk-high{color:var(--red)}
+  .risk-medium{color:var(--amber)}
+  .risk-low{color:var(--green2)}
+  .risk-vlow{color:var(--green)}
+  .sidebar-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1rem;margin-bottom:1rem}
+  .sidebar-title{color:var(--green2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .toc-item{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px solid var(--border2);font-size:12px;color:var(--text-dim);text-decoration:none;transition:color .15s;line-height:1.4}
+  .toc-item:last-child{border-bottom:none}.toc-item:hover{color:var(--green)}.toc-item::before{content:'> ';color:var(--green3);flex-shrink:0}
+  .nav-link{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border2);font-size:12px;color:var(--text-dim);text-decoration:none;transition:color .15s}
+  .nav-link:last-child{border-bottom:none}.nav-link:hover{color:var(--green)}.nav-link::before{content:'> ';color:var(--green3)}
+  .tag{font-size:10px;color:var(--green3);padding:2px 6px;border:1px solid var(--border);border-radius:2px;margin:2px}.tag::before{content:'#'}
+  .tags-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+  footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;color:var(--text-dim);font-size:11px;margin-top:2rem}
+  footer a{color:var(--green3);text-decoration:none}footer a:hover{color:var(--green)}
+</style>
+
+</head>
+<body>
+<nav>
+  <a class="nav-back" href="../../index.html">0xAkatsuki</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-back" href="../ad-simulation/index.html" style="color:var(--green3)">AD Simulation</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">AD Enumeration</span>
+</nav>
+
+<div class="layout">
+<main>
+  <div class="page-header">
+    <div class="breadcrumb"><span>~/projects/ad-simulation/notes/</span>ad-01-enumeration.html</div>
+    <div class="page-title">AD Enumeration</div>
+    <div style="margin:.5rem 0"><span class="badge badge-lotl">LotL</span> <span class="badge badge-opsec">OPSEC</span></div>
+    <div class="page-desc">Living off the Land — ADSI, PowerView, BloodHound</div>
+  </div>
+
+  
+    <div class="section" id="adsi">
+      <div class="section-title">True Living off the Land (ADSI & .NET)</div>
+      <p>net.exe yoki whoami.exe ishlatish Event ID 4688 (Process Creation) loqlari qoldiradi. Native .NET ADSI orqali LDAP so'rovlari to'g'ridan-to'g'ri xotiradan yuboriladi — process monitoring butunlay chetlab o'tiladi.</p>
+      <div class="note note-opsec"><span class="note-icon">⚿</span><span>ADSI so'rovlari oddiy domain LDAP traffic kabi ko'rinadi. SOC uchun hech qanday shubhali signal yo'q.</span></div>
+      <div class="cmd-block">
+      <div class="cmd-header"><span class="cmd-label">PowerShell</span><span class="cmd-lang">PowerShell</span></div>
+      <div class="cmd-body"><span class="comment"># [OPSEC] whoami.exe ishlatmasdan joriy foydalanuvchini aniqlash</span><br>[System.Security.Principal.WindowsIdentity]::GetCurrent().Name<br><br><span class="comment"># [ADSI] Domain Admins guruhini jimgina enumerate qilish</span><br>$Group = [ADSI]"LDAP://CN=Domain Admins,CN=Users,DC=domain,DC=local"<br>$Group.Member<br><br><span class="comment"># [ADSI] Barcha domain foydalanuvchilarini raw LDAP orqali topish</span><br>$Searcher = [adsisearcher]"(&(objectCategory=person)(objectClass=user))"<br>$Searcher.FindAll() | ForEach-Object { $_.Properties.name }<br><br><span class="comment"># [ADSI] SPN ega (Kerberoastable) foydalanuvchilarni PowerView siz topish</span><br>$Searcher = [adsisearcher]"(&(objectCategory=person)(objectClass=user)(servicePrincipalName=*))"<br>$Searcher.FindAll() | ForEach-Object { $_.Properties.samaccountname }</div>
+    </div>
+    </div>
+    <div class="section" id="powerview">
+      <div class="section-title">Advanced PowerView (In-Memory)</div>
+      <p>PowerView ni yuklashdan oldin AMSI bypass ni xotirada ishga tushiring. Butun domenni bir vaqtda dump qilish o'rniga aniq, maqsadli so'rovlardan foydalaning.</p>
+      <div class="note note-tip"><span class="note-icon">→</span><span>Import-Module o'rniga IEX (iwr ...) orqali in-memory yuklash — disk ga fayl tushirmaydi.</span></div>
+      <div class="cmd-block">
+      <div class="cmd-header"><span class="cmd-label">PowerShell</span><span class="cmd-lang">PowerShell</span></div>
+      <div class="cmd-body"><span class="comment"># In-memory import</span><br>Import-Module .\PowerView.ps1 -DisableNameChecking<br><br><span class="comment"># Kerberoastable foydalanuvchilar va SPNlarini topish</span><br>Get-DomainUser -SPN | Select-Object samaccountname, serviceprincipalname<br><br><span class="comment"># AS-REP Roastable foydalanuvchilarni topish</span><br>Get-DomainUser -PreauthNotRequired | Select-Object samaccountname<br><br><span class="comment"># Foydalanuvchi description larida parol qidirish</span><br>Get-DomainUser | Where-Object {$_.description -ne $null} | Select-Object samaccountname, description<br><br><span class="comment"># Unconstrained Delegation ruxsat berilgan hostlarni topish</span><br>Get-DomainComputer -Unconstrained | Select-Object name, dnshostname<br><br><span class="comment"># RBCD (Resource-Based Constrained Delegation) targetlarini topish</span><br>Get-DomainComputer | Where-Object {$_."msds-allowedtoactonbehalfofotheridentity"} | Select-Object name<br><br><span class="comment"># Xavfli ACL topish (GenericAll, WriteDacl va h.k.)</span><br>Find-InterestingDomainAcl -ResolveGUIDs | Where-Object {$_.IdentityReferenceName -eq "TargetUser"}</div>
+    </div>
+    </div>
+    <div class="section" id="bloodhound">
+      <div class="section-title">BloodHound / SharpHound (OPSEC Modes)</div>
+      <p>SharpHound.exe -c All ishlatish LDAP so'rovlarida katta spike hosil qiladi va SAMR requestlari SOC tomonidan kuzatiladi. Targeted collection metodlaridan foydalaning.</p>
+      <div class="note note-warn"><span class="note-icon">!</span><span>DCOnly collection — faqat DC dan LDAP so'rovlari. Workstationlarga tegmaydi, SAMR yo'q — eng kam shovqinli usul.</span></div>
+      <div class="cmd-block">
+      <div class="cmd-header"><span class="cmd-label">PowerShell</span><span class="cmd-lang">PowerShell</span></div>
+      <div class="cmd-body"><span class="comment"># [OPSEC] Stealth collection — faqat LDAP, workstation/SAMR yo'q</span><br>Invoke-BloodHound -CollectionMethod DCOnly -OutputDirectory C:\Windows\Temp\<br><br><span class="comment"># [OPSEC] Targeted session collection — faqat yuqori qiymatli targetlar</span><br>Invoke-BloodHound -CollectionMethod Session -ComputerFile targets.txt<br><br><span class="comment"># SharpHound siz native API orqali session enumeration</span><br>Get-NetSession -ComputerName TARGET_FILE_SERVER</div>
+    </div>
+    </div>
+
+  <div class="section" id="opsec">
+    <div class="section-title">OPSEC Notes & Telemetry Matrix</div>
+    <table class="opsec-table">
+      <thead><tr><th>Texnika</th><th>Risk</th><th>EDR Telemetry</th><th>OPSEC Yechim</th></tr></thead>
+      <tbody><tr><td><strong style="color:var(--text)">net.exe / whoami.exe</strong></td><td class="risk-high">High</td><td>Event 4688 (Process Creation). EDR tomonidan kuzatiladi.</td><td>[ADSI] va WindowsIdentity dan foydalaning.</td></tr><tr><td><strong style="color:var(--text)">SharpHound (-c All)</strong></td><td class="risk-high">High</td><td>Katta LDAP traffic spike. Event 4624/4634 barcha hostlarda.</td><td>-c DCOnly yoki targeted session.</td></tr><tr><td><strong style="color:var(--text)">PowerView</strong></td><td class="risk-medium">Medium</td><td>Event 4104 (PowerShell Script Block Logging).</td><td>AMSI patch, obfuscation, variable rename.</td></tr><tr><td><strong style="color:var(--text)">Native ADSI ([adsi])</strong></td><td class="risk-vlow">Very Low</td><td>Oddiy domain LDAP traffic kabi ko'rinadi.</td><td>N/A — eng stealth enumeration usuli.</td></tr></tbody>
+    </table>
+  </div>
+
+</main>
+
+<aside class="sidebar">
+  <div class="sidebar-card">
+    <div class="sidebar-title">Sahifa ma'lumotlari</div>
+    <div class="tags-row"><span class="tag">ADSI</span><span class="tag">PowerView</span><span class="tag">BloodHound</span><span class="tag">LDAP</span><span class="tag">Enumeration</span></div>
+  </div>
+
+  <div class="sidebar-card">
+    <div class="sidebar-title">Mundarija</div>
+    <a href="#adsi" class="toc-item">True Living off the Land (ADSI & .NET)</a><a href="#powerview" class="toc-item">Advanced PowerView (In-Memory)</a><a href="#bloodhound" class="toc-item">BloodHound / SharpHound (OPSEC Modes)</a><a href="#opsec" class="toc-item">OPSEC Matrix</a>
+  </div>
+
+  <div class="sidebar-card">
+    <div class="sidebar-title">Barcha noteslar</div>
+    <a href="ad-01-enumeration.html" class="nav-link">AD-01 Enumeration</a>
+    <a href="ad-02-kerberos.html" class="nav-link">AD-02 Kerberos</a>
+    <a href="ad-03-lateral.html" class="nav-link">AD-03 Lateral Movement</a>
+    <a href="ad-04-privesc.html" class="nav-link">AD-04 Privilege Escalation</a>
+    <a href="ad-05-persistence.html" class="nav-link">AD-05 Persistence</a>
+  </div>
+
+  <div class='sidebar-card'><div class='sidebar-title'>Navigatsiya</div><a href="ad-02-kerberos.html" class="nav-link">AD-02 Kerberos →</a></div>
+</aside>
+</div>
+
+<footer>
+  <a href="../../index.html">← Bosh sahifa</a> &nbsp;|&nbsp;
+  <a href="../ad-simulation/index.html">AD Simulation</a> &nbsp;|&nbsp;
+  0xAkatsuki
+</footer>
+</body>
+</html>
