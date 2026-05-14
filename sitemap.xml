@@ -2,31 +2,61 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://komilov-infosec.github.io/akatsuki.github.io/</loc>
+    <loc>https://komilov-infosec.github.io/</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://komilov-infosec.github.io/akatsuki.github.io/blog/</loc>
+    <loc>https://komilov-infosec.github.io/blog/</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://komilov-infosec.github.io/akatsuki.github.io/blog/ad-honeypot/</loc>
+    <loc>https://komilov-infosec.github.io/blog/ad-honeypot/</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://komilov-infosec.github.io/akatsuki.github.io/projects/ad-simulation/</loc>
+    <loc>https://komilov-infosec.github.io/projects/ad-simulation/</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://komilov-infosec.github.io/akatsuki.github.io/writeups/oscp/bbscute/bbscute.html</loc>
+    <loc>https://komilov-infosec.github.io/projects/ad-simulation/notes/ad-01-enumeration.html</loc>
+    <lastmod>2026-05-14</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://komilov-infosec.github.io/projects/ad-simulation/notes/ad-02-kerberos.html</loc>
+    <lastmod>2026-05-14</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://komilov-infosec.github.io/projects/ad-simulation/notes/ad-03-lateral.html</loc>
+    <lastmod>2026-05-14</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://komilov-infosec.github.io/projects/ad-simulation/notes/ad-04-privesc.html</loc>
+    <lastmod>2026-05-14</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://komilov-infosec.github.io/projects/ad-simulation/notes/ad-05-persistence.html</loc>
+    <lastmod>2026-05-14</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://komilov-infosec.github.io/writeups/oscp/bbscute/bbscute.html</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.7</priority>
   </url>

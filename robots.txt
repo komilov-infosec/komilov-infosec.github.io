@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://komilov-infosec.github.io/akatsuki.github.io/sitemap.xml
+Sitemap: https://komilov-infosec.github.io/sitemap.xml
